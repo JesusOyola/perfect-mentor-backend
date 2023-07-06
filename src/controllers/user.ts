@@ -1,5 +1,6 @@
 import { Request, Response } from "express"
-import bcrypt from "bcrypt";
+import bcrypt from "bcrypt"
+import jwt from "jsonwebtoken"
 import User from "../models/user"
 
 export const newUser = async (req: Request, res: Response) => {
@@ -7,7 +8,7 @@ export const newUser = async (req: Request, res: Response) => {
 
   // Hasheamos la contraseña
 
-  const hashedPassword = await bcrypt.hash(password,10)
+  const hashedPassword = await bcrypt.hash(password, 10)
 
   // Validamos si el usuario existe en la base de datos;
 
@@ -37,35 +38,51 @@ export const newUser = async (req: Request, res: Response) => {
       error,
     })
   }
-};
+}
 
+export const loginUser = async (req: Request, res: Response) => {
+  const { username, role, email, password } = req.body
 
-export const loginUser = async (req:Request, res: Response ) =>{
-    const { username, role, email, password } = req.body;
+  //Validamos si el usuario existe en la base de datos;
 
-    //Validamos si el usuario existe en la base de datos;
+  const user: any = await User.findOne({
+    where: { email: email },
+  })
 
-    const user:any = await User.findOne({
-        where:{ email: email}
+  if (!user) {
+    return res.status(400).json({
+      msg: `No existe usuario registrado con el email ${email}`,
     })
+  }
 
-    if(!user){
-        return res.status(400).json({
-            msg:`No existe usuario registrado con el email ${email}`,
-        })
-    }
+  // Validamos el password
 
-    // Validamos el password
+  const passwordIsValid = await bcrypt.compare(
+    password,
+    user.password
+  )
 
-    const passwordIsValid = await bcrypt.compare(password, user.password);
+  if (!passwordIsValid) {
+    return res.status(400).json({
+      msg: `La contraseña es incorrecta`,
+    })
+  }
 
-    if(!passwordIsValid){
-        return res.status(400).json({
-            msg: `La contraseña es incorrecta`
-        })
-    }
+  //Generamos un token
 
-    try {
+  const token = jwt.sign(
+    {
+      username: username,
+      role: role,
+      email: email,
+      password: password,
+    },
+    process.env.SECRET_KEY || "jesus36341423"
+  )
+
+  res.send(token);
+
+  /* try {
         res.json({
             msg: `Usuario logueado exitosamente!`,
             body: req.body
@@ -76,7 +93,13 @@ export const loginUser = async (req:Request, res: Response ) =>{
             error,
           })
     }
+ */
+}
 
-} 
 
+export const getAllUsers = async (req: Request, res: Response)=>{
 
+    const listUsers = await User.findAll();
+    res.json(listUsers)
+
+}
