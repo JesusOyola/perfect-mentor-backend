@@ -12,11 +12,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.loginUser = exports.newUser = void 0;
+exports.getAllUsers = exports.loginUser = exports.newUser = void 0;
 const bcrypt_1 = __importDefault(require("bcrypt"));
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const user_1 = __importDefault(require("../models/user"));
 const newUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { username, role, email, password } = req.body;
+    const { id, username, role, email, password } = req.body;
     // Hasheamos la contraseña
     const hashedPassword = yield bcrypt_1.default.hash(password, 10);
     // Validamos si el usuario existe en la base de datos;
@@ -50,7 +51,7 @@ const loginUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { username, role, email, password } = req.body;
     //Validamos si el usuario existe en la base de datos;
     const user = yield user_1.default.findOne({
-        where: { email: email }
+        where: { email: email },
     });
     if (!user) {
         return res.status(400).json({
@@ -61,20 +62,33 @@ const loginUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const passwordIsValid = yield bcrypt_1.default.compare(password, user.password);
     if (!passwordIsValid) {
         return res.status(400).json({
-            msg: `La contraseña es incorrecta`
+            msg: `La contraseña es incorrecta`,
         });
     }
-    try {
-        res.json({
-            msg: `Usuario logueado exitosamente!`,
-            body: req.body
-        });
-    }
-    catch (error) {
-        res.status(400).json({
-            msg: " Ocurrió un error",
-            error,
-        });
-    }
+    //Generamos un token
+    const token = jsonwebtoken_1.default.sign({
+        id: user.id,
+        username: username,
+        role: role,
+        email: email,
+    }, process.env.SECRET_KEY || "jesus36341423");
+    res.send(token);
+    /* try {
+          res.json({
+              msg: `Usuario logueado exitosamente!`,
+              body: req.body
+          })
+      } catch (error) {
+          res.status(400).json({
+              msg: " Ocurrió un error",
+              error,
+            })
+      }
+   */
 });
 exports.loginUser = loginUser;
+const getAllUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const listUsers = yield user_1.default.findAll();
+    res.json(listUsers);
+});
+exports.getAllUsers = getAllUsers;
