@@ -6,11 +6,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const validateToken = (req, res, next) => {
     const headerToken = req.headers["authorization"];
-    console.log(headerToken);
+    //console.log(headerToken)
     if (headerToken != undefined) {
         try {
             const bearerToken = headerToken.slice(7);
-            jsonwebtoken_1.default.verify(bearerToken, process.env.SECRET_KEY || "jesus36341423");
+            const verifiToken = jsonwebtoken_1.default.verify(bearerToken, process.env.SECRET_KEY || "jesus36341423");
+            /* console.log(verifiToken)
+            console.log((verifiToken as JwtPayload).id)  */
             next();
         }
         catch (error) {

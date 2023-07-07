@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken"
 import User from "../models/user"
 
 export const newUser = async (req: Request, res: Response) => {
-  const { username, role, email, password } = req.body
+  const { id, username, role, email, password } = req.body
 
   // Hasheamos la contraseña
 
@@ -72,15 +72,15 @@ export const loginUser = async (req: Request, res: Response) => {
 
   const token = jwt.sign(
     {
+      id: user.id,
       username: username,
       role: role,
       email: email,
-      password: password,
     },
     process.env.SECRET_KEY || "jesus36341423"
   )
 
-  res.send(token);
+  res.send(token)
 
   /* try {
         res.json({
@@ -96,10 +96,7 @@ export const loginUser = async (req: Request, res: Response) => {
  */
 }
 
-
-export const getAllUsers = async (req: Request, res: Response)=>{
-
-    const listUsers = await User.findAll();
-    res.json(listUsers)
-
+export const getAllUsers = async (req: Request, res: Response) => {
+  const listUsers = await User.findAll()
+  res.json(listUsers)
 }

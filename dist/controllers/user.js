@@ -17,7 +17,7 @@ const bcrypt_1 = __importDefault(require("bcrypt"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const user_1 = __importDefault(require("../models/user"));
 const newUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { username, role, email, password } = req.body;
+    const { id, username, role, email, password } = req.body;
     // Hasheamos la contraseña
     const hashedPassword = yield bcrypt_1.default.hash(password, 10);
     // Validamos si el usuario existe en la base de datos;
@@ -67,10 +67,10 @@ const loginUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
     //Generamos un token
     const token = jsonwebtoken_1.default.sign({
+        id: user.id,
         username: username,
         role: role,
         email: email,
-        password: password,
     }, process.env.SECRET_KEY || "jesus36341423");
     res.send(token);
     /* try {
