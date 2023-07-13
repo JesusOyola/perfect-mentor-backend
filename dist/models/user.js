@@ -14,7 +14,6 @@ const User = db.define("user", {
     },
     username: {
         type: sequelize_1.DataTypes.STRING,
-        unique: true,
         allowNull: false
     },
     role: {
@@ -28,7 +27,6 @@ const User = db.define("user", {
     },
     password: {
         type: sequelize_1.DataTypes.STRING,
-        unique: true,
         allowNull: false
     },
 }, {
