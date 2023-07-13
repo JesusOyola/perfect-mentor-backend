@@ -80,7 +80,10 @@ export const loginUser = async (req: Request, res: Response) => {
     process.env.SECRET_KEY || "jesus36341423"
   )
 
-  res.send(token)
+  console.log(token)
+
+  res.json(token)
+  
 
   /* try {
         res.json({

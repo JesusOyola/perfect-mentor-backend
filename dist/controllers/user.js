@@ -72,7 +72,8 @@ const loginUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         role: role,
         email: email,
     }, process.env.SECRET_KEY || "jesus36341423");
-    res.send(token);
+    console.log(token);
+    res.json(token);
     /* try {
           res.json({
               msg: `Usuario logueado exitosamente!`,
