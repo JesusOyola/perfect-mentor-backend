@@ -12,7 +12,6 @@ const User = db.define(
       },
       username: {
         type: DataTypes.STRING,
-        unique:true,
         allowNull:false
       },
       role:{
@@ -26,7 +25,6 @@ const User = db.define(
       },
       password: {
         type: DataTypes.STRING,
-        unique:true,
         allowNull:false
       },
     },
